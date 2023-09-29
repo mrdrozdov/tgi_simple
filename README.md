@@ -8,6 +8,7 @@ Inspired by Huggingface's text generation inference server, our "Text Generation
 git clone git@github.com:mrdrozdov/tgi_simple.git && cd tgi_simple
 
 # Install requirements.
+# fire
 # pytorch
 # transformers
 # accelerate
@@ -18,7 +19,7 @@ git clone git@github.com:mrdrozdov/tgi_simple.git && cd tgi_simple
 Start server.
 
 ```
-python text_generation_inference.py
+python text_generation_inference.py --model_type gpt2 --model_name_or_path gpt2 --use-cpu
 ```
 
 Make API calls.

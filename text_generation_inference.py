@@ -69,9 +69,16 @@ def start_server(server_class=HTTPServer, handler_class=SimpleHTTPRequestHandler
 
 
 if __name__ == "__main__":
+    import fire
+    import os
+
+    os.environ["PAGER"] = "cat"
+
+    lm_args = fire.Fire(LMArgs)
+
+    print(json.dumps(lm_args.__dict__, indent=4))
+
     # Init model.
-    lm_args = LMArgs(model_type="gpt2", model_name_or_path="gpt2")
-    lm_args.use_cpu = True
     model, tokenizer, distributed_state = init_model_and_state(lm_args)
 
     # Start server.
