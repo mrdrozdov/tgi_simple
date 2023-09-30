@@ -9,7 +9,9 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
-        post_data = json.loads(self.rfile.read(content_length))
+        post_data = self.rfile.read(content_length)
+        if isinstance(post_data, str):
+            post_data = json.loads(post_data)
 
         model_name = post_data["model_name"]
         prompts = post_data["prompts"]
