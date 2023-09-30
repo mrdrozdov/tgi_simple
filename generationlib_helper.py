@@ -20,7 +20,7 @@ from accelerate.utils import set_seed
 class LMArgs:
     model_type: str
     model_name_or_path: str
-    length: int = 20
+    max_new_tokens: int = 20
     stop_token: str = None
     temperature: float = 1.0
     repetition_penalty: float = 1.0
@@ -34,6 +34,7 @@ class LMArgs:
     num_return_sequences: int = 1
     fp16: bool = False
     jit: bool = False
+    do_greedy: bool = False
 
 
 def init_model_and_state(args: LMArgs):
@@ -63,7 +64,6 @@ def init_model_and_state(args: LMArgs):
     if args.fp16:
         model.half()
     max_seq_length = getattr(model.config, "max_position_embeddings", 0)
-    args.length = adjust_length_to_model(args.length, max_sequence_length=max_seq_length)
     logger.info(args)
 
     if args.jit:
@@ -112,14 +112,25 @@ def call_run_generation(model, tokenizer, distributed_state, prompt_text, args):
     else:
         input_ids = encoded_prompt
 
+    if args.do_greedy:
+        temperature = None
+        top_k = None
+        top_p = None
+        do_sample = False
+    else:
+        temperature = args.temperature
+        top_k = args.k
+        top_p = args.p
+        do_sample = True
+
     output_sequences = model.generate(
         input_ids=input_ids,
-        max_length=args.length + len(encoded_prompt[0]),
-        temperature=args.temperature,
-        top_k=args.k,
-        top_p=args.p,
+        max_new_tokens=args.max_new_tokens,
+        temperature=temperature,
+        top_k=top_k,
+        top_p=top_p,
         repetition_penalty=args.repetition_penalty,
-        do_sample=True,
+        do_sample=do_sample,
         num_return_sequences=args.num_return_sequences,
     )
 
