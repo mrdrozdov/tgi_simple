@@ -21,13 +21,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         success = True
         error_message = None
 
-        # Verify model type.
-        # NOTE: This check is only included to prevent accidentally using one model when you expect another.
-        if success:
-            if model_name != lm_args.model_name_or_path:
-                success = False
-                error_message = f"Model name mismatch: {model_name} != {lm_args.model_name_or_path}"
-
         # Extract prompt.
         if success:
             if len(prompts) < 1:
@@ -56,6 +49,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                 "form_data": post_data,
                 "status": error_message
             }
+
+        print(f'SUCCESS {success} {error_message}')
 
         # Send response
         self.send_response(200)
